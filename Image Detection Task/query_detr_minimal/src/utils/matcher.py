@@ -8,10 +8,10 @@ except Exception:
     _HAS_SCIPY = False
 
 def _class_cost(pred_logits, tgt_labels):
-    # pred_logits: (T, K+1)
-    # tgt_labels: (G,) each in [1..K]
-    # cost: (T,G) = -log P(class=y_j)
-    probs = F.softmax(pred_logits, dim=-1)  # (T,K+1)
+    
+    
+    
+    probs = F.softmax(pred_logits, dim=-1)  
     T = probs.shape[0]
     G = tgt_labels.shape[0]
     cost = torch.zeros((T,G), dtype=torch.float32, device=pred_logits.device)
@@ -21,33 +21,33 @@ def _class_cost(pred_logits, tgt_labels):
     return cost
 
 def _box_l1_cost(pred_boxes, tgt_boxes):
-    # pred_boxes: (T,4), tgt_boxes: (G,4)
-    # pairwise L1
+    
+    
     T = pred_boxes.shape[0]
     G = tgt_boxes.shape[0]
-    pb = pred_boxes.unsqueeze(1).repeat(1,G,1)  # (T,G,4)
-    tb = tgt_boxes.unsqueeze(0).repeat(T,1,1)   # (T,G,4)
-    return torch.abs(pb - tb).sum(-1)           # (T,G)
+    pb = pred_boxes.unsqueeze(1).repeat(1,G,1)  
+    tb = tgt_boxes.unsqueeze(0).repeat(T,1,1)   
+    return torch.abs(pb - tb).sum(-1)           
 
 def hungarian_match(pred_logits, pred_boxes, tgt_labels, tgt_boxes, w_cls=1.0, w_box=5.0):
-    # Returns index tensors (rows, cols) for matches. Empty if no targets.
+    
     device = pred_logits.device
     G = tgt_boxes.shape[0]
     if G == 0:
         return torch.empty(0, dtype=torch.long, device=device), torch.empty(0, dtype=torch.long, device=device)
 
-    c_cost = _class_cost(pred_logits, tgt_labels)  # (T,G)
-    b_cost = _box_l1_cost(pred_boxes, tgt_boxes)   # (T,G)
-    total = w_cls * c_cost + w_box * b_cost        # (T,G)
+    c_cost = _class_cost(pred_logits, tgt_labels)  
+    b_cost = _box_l1_cost(pred_boxes, tgt_boxes)   
+    total = w_cls * c_cost + w_box * b_cost        
 
     if _HAS_SCIPY:
-        # move to cpu for SciPy
+        
         import numpy as np
         cost_np = total.detach().cpu().numpy()
         r, c = linear_sum_assignment(cost_np)
         return torch.as_tensor(r, dtype=torch.long, device=device), torch.as_tensor(c, dtype=torch.long, device=device)
     else:
-        # Greedy fallback: iteratively choose the min remaining pair
+        
         T, G = total.shape
         used_r = set()
         used_c = set()

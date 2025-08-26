@@ -6,7 +6,7 @@ from .matcher import hungarian_match
 def compute_losses_for_image(pred_logits, pred_boxes, tgt_labels, tgt_boxes, box_weight=5.0):
     device = pred_logits.device
     T = pred_logits.shape[0]
-    # Build default targets: all no-object (0)
+    
     cls_target = torch.zeros((T,), dtype=torch.long, device=device)
 
     if tgt_boxes.numel() == 0:
@@ -16,7 +16,7 @@ def compute_losses_for_image(pred_logits, pred_boxes, tgt_labels, tgt_boxes, box
 
     rows, cols = hungarian_match(pred_logits, pred_boxes, tgt_labels, tgt_boxes)
 
-    # set matched to their labels
+    
     cls_target[rows] = tgt_labels[cols].long().to(device)
 
     ce = F.cross_entropy(pred_logits, cls_target)
@@ -32,10 +32,10 @@ def train_one_epoch(model, loader, optimizer, device, box_weight=5.0):
     model.train()
     sum_ce, sum_l1, n = 0.0, 0.0, 0
     for images, targets in tqdm(loader, desc="train"):
-        images = torch.stack(images).to(device)      # (B,3,H,W)
+        images = torch.stack(images).to(device)      
         outputs = model(images)
-        logits = outputs["pred_logits"]              # (B,T,K+1)
-        boxes  = outputs["pred_boxes"]               # (B,T,4)
+        logits = outputs["pred_logits"]              
+        boxes  = outputs["pred_boxes"]               
 
         optimizer.zero_grad()
         ce_total = 0.0

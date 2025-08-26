@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from PIL import Image, ImageDraw, ImageFont
 
 def draw_predictions_on_image(pil_img, pred_logits, pred_boxes, label_to_name, score_thr=0.3):
-    # pred_logits: (T,K+1), pred_boxes: (T,4) normalized cx,cy,w,h
+    
     probs = torch.softmax(pred_logits, dim=-1)
     scores, labels = probs.max(-1)
     keep = (labels != 0) & (scores >= score_thr)
@@ -40,9 +40,9 @@ def save_samples(model, dataset, indices, outdir, label_to_name, device, score_t
         pil.save(os.path.join(outdir, f"pred_{os.path.basename(fn)}"))
 
 def transforms_to_pil(tensor_img):
-    # tensor in [0,1] normalized or not. Try to undo basic ImageNet normalization if it looks off.
+    
     from torchvision import transforms
-    # assume ImageNet mean/std used
+    
     inv = transforms.Compose([
         transforms.Normalize(mean=[0,0,0], std=[1/0.229,1/0.224,1/0.225]),
         transforms.Normalize(mean=[-0.485,-0.456,-0.406], std=[1,1,1]),

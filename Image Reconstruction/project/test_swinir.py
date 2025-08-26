@@ -1,5 +1,5 @@
-# test_swinir.py
-# Load CIFAR-10, run one batch through the SwinIRBlock, print shapes, and plot sample before/after.
+
+
 
 import torch
 from torch.utils.data import DataLoader
@@ -13,7 +13,7 @@ from swinir import SwinIRBlock
 print("Starting script...")
 
 def imshow(ax, tensor_img, title=None):
-    # tensor_img: (3, H, W) or (H, W, 3)
+    
     if tensor_img.ndim == 3 and tensor_img.shape[0] == 3:
         img = tensor_img.permute(1, 2, 0).cpu().numpy()
     else:
@@ -31,7 +31,7 @@ def main():
 
     transform = transforms.Compose([
         transforms.Resize((32, 32)),
-        transforms.ToTensor(),  # scales to [0,1]
+        transforms.ToTensor(),  
     ])
 
     print("Loading CIFAR-10 dataset...")
@@ -39,7 +39,7 @@ def main():
     dataloader = DataLoader(cifar_train, batch_size=8, shuffle=True, num_workers=0)
 
     print("Getting first batch...")
-    images, labels = next(iter(dataloader))  # images shape: (B, 3, 32, 32)
+    images, labels = next(iter(dataloader))  
     print("Loaded batch shape:", images.shape)
 
     images = images.to(device)
@@ -64,7 +64,7 @@ def main():
     outputs_cpu = outputs.cpu()
 
     print("Plotting results...")
-    # plot first 4 input-output pairs
+    
     n = 4
     fig, axes = plt.subplots(n, 2, figsize=(6, 3 * n))
     for i in range(n):

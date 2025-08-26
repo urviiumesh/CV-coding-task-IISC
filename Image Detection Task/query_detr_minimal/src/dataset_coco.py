@@ -14,7 +14,7 @@ class CocoSimpleDataset(Dataset):
         for a in coco["annotations"]:
             self.anns_by_img.setdefault(a["image_id"], []).append(a)
         cats = coco["categories"]
-        # labels start at 1..K to reserve 0 for no-object
+        
         self.catid_to_label = {c["id"]: i+1 for i,c in enumerate(cats)}
         self.label_to_catid = {v:k for k,v in self.catid_to_label.items()}
         self.label_to_name = {i+1: c["name"] for i,c in enumerate(cats)}

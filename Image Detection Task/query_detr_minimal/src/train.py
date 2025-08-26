@@ -56,12 +56,12 @@ def main():
         print(f" train: CE={tr_ce:.4f} L1={tr_l1:.4f} total={tr_total:.4f}")
         print(f"   val: CE={va_ce:.4f} L1={va_l1:.4f} total={va_total:.4f}")
 
-        # save a few samples every epoch
+        
         sample_dir = os.path.join(args.outdir, "samples")
         idxs = list(range(min(6, len(val_ds))))
         save_samples(model, val_ds, idxs, sample_dir, val_ds.label_to_name, device=device, score_thr=0.3)
 
-    # save curves
+    
     plt.figure()
     plt.plot(range(1, args.epochs+1), train_hist, label="train")
     plt.plot(range(1, args.epochs+1), val_hist, label="val")
@@ -71,7 +71,7 @@ def main():
     plt.tight_layout()
     plt.savefig(os.path.join(args.outdir, "loss_curves.png"), dpi=200)
 
-    # save final model
+    
     torch.save({"model": model.state_dict(), "num_classes": train_ds.num_classes,
                 "num_queries": args.num_queries, "hidden_dim": args.hidden_dim},
                os.path.join(args.outdir, "model_final.pt"))
